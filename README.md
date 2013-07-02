@@ -25,4 +25,17 @@ $ cd src/pkg/logstreamer/
 $ go test
 ```
 
+Here is issue two local commands:
+
+```bash
+ls -al
+```
+
+and 
+
+
+```bash
+ls nonexisting
+```
+
 ![screen shot 2013-07-02 at 2 48 33 pm](https://f.cloud.github.com/assets/26752/736371/16177cf0-e316-11e2-8dc6-320f52f71442.png)
