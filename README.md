@@ -1,5 +1,10 @@
-logstreamer
-===========
+logstreamer [![Build Status][BuildStatusIMGURL]][BuildStatusURL]
+===============
+[![Flattr][FlattrIMGURL]][FlattrURL]
+
+[BuildStatusIMGURL]:        https://secure.travis-ci.org/kvz/logstreamer.png?branch=master
+[BuildStatusURL]:           //travis-ci.org/kvz/logstreamer  "Build Status"
+[FlattrURL]:                https://flattr.com/submit/auto?user_id=kvz&url=github.com/kvz/logstreamer&title=logstreamer&language=&tags=github&category=software
 
 Prefixes streams (e.g. stdout or stderr) in Go.
 
