@@ -1,11 +1,11 @@
 package logstreamer
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"testing"
-	"fmt"
 )
 
 func TestLogstreamerOk(t *testing.T) {

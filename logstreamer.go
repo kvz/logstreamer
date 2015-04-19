@@ -3,8 +3,8 @@ package logstreamer
 import (
 	"bytes"
 	"io"
-	"os"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -40,8 +40,8 @@ func NewLogstreamer(logger *log.Logger, prefix string, record bool) *Logstreamer
 	}
 
 	if strings.HasPrefix(os.Getenv("TERM"), "xterm") {
-		streamer.colorOkay  = "\x1b[32m"
-		streamer.colorFail  = "\x1b[31m"
+		streamer.colorOkay = "\x1b[32m"
+		streamer.colorFail = "\x1b[31m"
 		streamer.colorReset = "\x1b[0m"
 	}
 
@@ -121,4 +121,3 @@ func (l *Logstreamer) out(str string) (err error) {
 
 	return nil
 }
-
