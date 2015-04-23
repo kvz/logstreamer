@@ -9,9 +9,8 @@ import (
 )
 
 type Logstreamer struct {
-	Logger    *log.Logger
-	buf       *bytes.Buffer
-	readLines string
+	Logger *log.Logger
+	buf    *bytes.Buffer
 	// If prefix == stdout, colors green
 	// If prefix == stderr, colors red
 	// Else, prefix is taken as-is, and prepended to anything
@@ -83,19 +82,10 @@ func (l *Logstreamer) OutputLines() (err error) {
 			return err
 		}
 
-		l.readLines += line
 		l.out(line)
 	}
 
 	return nil
-}
-
-func (l *Logstreamer) ResetReadLines() {
-	l.readLines = ""
-}
-
-func (l *Logstreamer) ReadLines() string {
-	return l.readLines
 }
 
 func (l *Logstreamer) FlushRecord() string {
