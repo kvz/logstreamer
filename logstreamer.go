@@ -93,14 +93,18 @@ func (l *Logstreamer) Flush() error {
 func (l *Logstreamer) OutputLines() error {
 	for {
 		line, err := l.buf.ReadString('\n')
+
+		if len(line) > 0 {
+			l.out(line)
+		}
+
 		if err == io.EOF {
 			break
 		}
+
 		if err != nil {
 			return err
 		}
-
-		l.out(line)
 	}
 
 	return nil
