@@ -57,7 +57,9 @@ func (l *Logstreamer) Write(p []byte) (n int, err error) {
 }
 
 func (l *Logstreamer) Close() error {
-	l.Flush()
+	if err := l.Flush(); err != nil {
+		return err
+	}
 	l.buf = bytes.NewBuffer([]byte(""))
 	return nil
 }
@@ -72,7 +74,7 @@ func (l *Logstreamer) Flush() error {
 	return nil
 }
 
-func (l *Logstreamer) OutputLines() (err error) {
+func (l *Logstreamer) OutputLines() error {
 	for {
 		line, err := l.buf.ReadString('\n')
 		if err == io.EOF {
@@ -94,7 +96,7 @@ func (l *Logstreamer) FlushRecord() string {
 	return buffer
 }
 
-func (l *Logstreamer) out(str string) (err error) {
+func (l *Logstreamer) out(str string) {
 	if l.record == true {
 		l.persist = l.persist + str
 	}
@@ -108,6 +110,4 @@ func (l *Logstreamer) out(str string) (err error) {
 	}
 
 	l.Logger.Print(str)
-
-	return nil
 }
