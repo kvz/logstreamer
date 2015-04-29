@@ -9,9 +9,8 @@ import (
 )
 
 type Logstreamer struct {
-	Logger    *log.Logger
-	buf       *bytes.Buffer
-	readLines string
+	Logger *log.Logger
+	buf    *bytes.Buffer
 	// If prefix == stdout, colors green
 	// If prefix == stderr, colors red
 	// Else, prefix is taken as-is, and prepended to anything
@@ -25,6 +24,22 @@ type Logstreamer struct {
 	colorOkay  string
 	colorFail  string
 	colorReset string
+}
+
+func NewLogstreamerForWriter(prefix string, writer io.Writer) *Logstreamer {
+	logger := log.New(writer, prefix, 0)
+	return NewLogstreamer(logger, "", false)
+}
+
+func NewLogstreamerForStdout(prefix string) *Logstreamer {
+	// logger := log.New(os.Stdout, prefix, log.Ldate|log.Ltime)
+	logger := log.New(os.Stdout, prefix, 0)
+	return NewLogstreamer(logger, "", false)
+}
+
+func NewLogstreamerForStderr(prefix string) *Logstreamer {
+	logger := log.New(os.Stderr, prefix, 0)
+	return NewLogstreamer(logger, "", false)
 }
 
 func NewLogstreamer(logger *log.Logger, prefix string, record bool) *Logstreamer {
@@ -58,7 +73,9 @@ func (l *Logstreamer) Write(p []byte) (n int, err error) {
 }
 
 func (l *Logstreamer) Close() error {
-	l.Flush()
+	if err := l.Flush(); err != nil {
+		return err
+	}
 	l.buf = bytes.NewBuffer([]byte(""))
 	return nil
 }
@@ -73,29 +90,24 @@ func (l *Logstreamer) Flush() error {
 	return nil
 }
 
-func (l *Logstreamer) OutputLines() (err error) {
+func (l *Logstreamer) OutputLines() error {
 	for {
 		line, err := l.buf.ReadString('\n')
+
+		if len(line) > 0 {
+			l.out(line)
+		}
+
 		if err == io.EOF {
 			break
 		}
+
 		if err != nil {
 			return err
 		}
-
-		l.readLines += line
-		l.out(line)
 	}
 
 	return nil
-}
-
-func (l *Logstreamer) ResetReadLines() {
-	l.readLines = ""
-}
-
-func (l *Logstreamer) ReadLines() string {
-	return l.readLines
 }
 
 func (l *Logstreamer) FlushRecord() string {
@@ -104,7 +116,7 @@ func (l *Logstreamer) FlushRecord() string {
 	return buffer
 }
 
-func (l *Logstreamer) out(str string) (err error) {
+func (l *Logstreamer) out(str string) {
 	if l.record == true {
 		l.persist = l.persist + str
 	}
@@ -118,6 +130,4 @@ func (l *Logstreamer) out(str string) (err error) {
 	}
 
 	l.Logger.Print(str)
-
-	return nil
 }
