@@ -14,9 +14,11 @@ func TestLogstreamerOk(t *testing.T) {
 
 	// Setup a streamer that we'll pipe cmd.Stdout to
 	logStreamerOut := NewLogstreamer(logger, "stdout", false)
+	defer logStreamerOut.Close()
 	// Setup a streamer that we'll pipe cmd.Stderr to.
 	// We want to record/buffer anything that's written to this (3rd argument true)
 	logStreamerErr := NewLogstreamer(logger, "stderr", true)
+	defer logStreamerErr.Close()
 
 	// Execute something that succeeds
 	cmd := exec.Command(
@@ -50,9 +52,11 @@ func TestLogstreamerErr(t *testing.T) {
 
 	// Setup a streamer that we'll pipe cmd.Stdout to
 	logStreamerOut := NewLogstreamer(logger, "stdout", false)
+	defer logStreamerOut.Close()
 	// Setup a streamer that we'll pipe cmd.Stderr to.
 	// We want to record/buffer anything that's written to this (3rd argument true)
 	logStreamerErr := NewLogstreamer(logger, "stderr", true)
+	defer logStreamerErr.Close()
 
 	// Execute something that succeeds
 	cmd := exec.Command(
