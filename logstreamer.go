@@ -126,6 +126,10 @@ func (l *Logstreamer) FlushRecord() string {
 }
 
 func (l *Logstreamer) out(str string) {
+	if len(str) < 1 {
+		return
+	}
+
 	if l.record == true {
 		l.persist = l.persist + str
 	}
