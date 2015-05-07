@@ -95,7 +95,16 @@ func (l *Logstreamer) OutputLines() error {
 		line, err := l.buf.ReadString('\n')
 
 		if len(line) > 0 {
-			l.out(line)
+			if strings.HasSuffix(line, "\n") {
+				l.out(line)
+			} else {
+				// put back into buffer, it's not a complete line yet
+				//  Close() or Flush() have to be used to flush out
+				//  the last remaining line if it does not end with a newline
+				if _, err := l.buf.WriteString(line); err != nil {
+					return err
+				}
+			}
 		}
 
 		if err == io.EOF {
