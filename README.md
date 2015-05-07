@@ -29,31 +29,32 @@ might not end with a newline character!**
 
 A typical usage pattern looks like this:
 
-    // Create a logger (your app probably already has one)
-	logger := log.New(os.Stdout, "--> ", log.Ldate|log.Ltime)
+```go
+// Create a logger (your app probably already has one)
+logger := log.New(os.Stdout, "--> ", log.Ldate|log.Ltime)
 
-	// Setup a streamer that we'll pipe cmd.Stdout to
-	logStreamerOut := NewLogstreamer(logger, "stdout", false)
-	defer logStreamerOut.Close()
-	// Setup a streamer that we'll pipe cmd.Stderr to.
-	// We want to record/buffer anything that's written to this (3rd argument true)
-	logStreamerErr := NewLogstreamer(logger, "stderr", true)
-	defer logStreamerErr.Close()
+// Setup a streamer that we'll pipe cmd.Stdout to
+logStreamerOut := NewLogstreamer(logger, "stdout", false)
+defer logStreamerOut.Close()
+// Setup a streamer that we'll pipe cmd.Stderr to.
+// We want to record/buffer anything that's written to this (3rd argument true)
+logStreamerErr := NewLogstreamer(logger, "stderr", true)
+defer logStreamerErr.Close()
 
-	// Execute something that succeeds
-	cmd := exec.Command(
-		"ls",
-		"-al",
-	)
-	cmd.Stderr = logStreamerErr
-	cmd.Stdout = logStreamerOut
+// Execute something that succeeds
+cmd := exec.Command(
+	"ls",
+	"-al",
+)
+cmd.Stderr = logStreamerErr
+cmd.Stdout = logStreamerOut
 
-	// Reset any error we recorded
-	logStreamerErr.FlushRecord()
+// Reset any error we recorded
+logStreamerErr.FlushRecord()
 
-	// Execute command
-	err := cmd.Start()
-    ...
+// Execute command
+err := cmd.Start()
+```
 
 ## Test
 
