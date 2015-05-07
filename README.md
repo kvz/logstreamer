@@ -24,6 +24,37 @@ You pass 3 arguments to `NewLogstreamer()`:
 This returns an interface that you can point `exec.Command`'s `cmd.Stderr` and `cmd.Stdout` to.
 All bytes that are written to it are split by newline and then prefixed to your specification.
 
+**Don't forget to call `Flush()` or `Close()` if the last line of the log
+might not end with a newline character!**
+
+A typical usage pattern looks like this:
+
+    // Create a logger (your app probably already has one)
+	logger := log.New(os.Stdout, "--> ", log.Ldate|log.Ltime)
+
+	// Setup a streamer that we'll pipe cmd.Stdout to
+	logStreamerOut := NewLogstreamer(logger, "stdout", false)
+	defer logStreamerOut.Close()
+	// Setup a streamer that we'll pipe cmd.Stderr to.
+	// We want to record/buffer anything that's written to this (3rd argument true)
+	logStreamerErr := NewLogstreamer(logger, "stderr", true)
+	defer logStreamerErr.Close()
+
+	// Execute something that succeeds
+	cmd := exec.Command(
+		"ls",
+		"-al",
+	)
+	cmd.Stderr = logStreamerErr
+	cmd.Stdout = logStreamerOut
+
+	// Reset any error we recorded
+	logStreamerErr.FlushRecord()
+
+	// Execute command
+	err := cmd.Start()
+    ...
+
 ## Test
 
 ```bash
