@@ -6,11 +6,15 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
 type Logstreamer struct {
 	Logger *log.Logger
-	buf    *bytes.Buffer
+	// the mutex is to prevent two concurrent writes from modifying the buffer
+	// at the same time
+	mu  sync.Mutex
+	buf *bytes.Buffer
 	// If prefix == stdout, colors green
 	// If prefix == stderr, colors red
 	// Else, prefix is taken as-is, and prepended to anything
@@ -64,6 +68,8 @@ func NewLogstreamer(logger *log.Logger, prefix string, record bool) *Logstreamer
 }
 
 func (l *Logstreamer) Write(p []byte) (n int, err error) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	if n, err = l.buf.Write(p); err != nil {
 		return
 	}
