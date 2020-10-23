@@ -1,10 +1,13 @@
 package logstreamer
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
@@ -83,5 +86,26 @@ func TestLogstreamerErr(t *testing.T) {
 		fmt.Printf("Good. command finished with %s. %s. \n", err.Error(), logStreamerErr.FlushRecord())
 	} else {
 		t.Fatal("This command should have failed")
+	}
+}
+
+func TestLogstreamerFlush(t *testing.T) {
+	const text = "Text without newline"
+
+	var buffer bytes.Buffer
+	byteWriter := bufio.NewWriter(&buffer)
+
+	logger := log.New(byteWriter, "", 0)
+	logStreamerOut := NewLogstreamer(logger, "", false)
+	defer logStreamerOut.Close()
+
+	logStreamerOut.Write([]byte(text))
+	logStreamerOut.Flush()
+	byteWriter.Flush()
+
+	s := strings.TrimSpace(string(buffer.Bytes()))
+
+	if s != text {
+		t.Fatalf("Expected '%s', got '%s'.", text, s)
 	}
 }
